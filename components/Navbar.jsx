@@ -5,6 +5,7 @@ import Logo from "./Logo";
 
 export default function Navbar() {
   const [time, setTime] = useState("");
+  const [weather, setWeather] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
@@ -13,6 +14,35 @@ export default function Navbar() {
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=-34.6177&longitude=-68.3301&current=temperature_2m,weather_code");
+        const data = await res.json();
+        const temp = Math.round(data.current.temperature_2m);
+        const code = data.current.weather_code;
+        
+        let icon = "☀️";
+        let desc = "Despejado";
+        
+        if (code >= 1 && code <= 3) { icon = "🌤️"; desc = "Algo nublado"; }
+        if (code >= 45 && code <= 48) { icon = "🌫️"; desc = "Niebla"; }
+        if (code >= 51 && code <= 67) { icon = "🌧️"; desc = "Lluvia"; }
+        if (code >= 71 && code <= 77) { icon = "❄️"; desc = "Nieve"; }
+        if (code >= 80 && code <= 82) { icon = "🌧️"; desc = "Chubascos"; }
+        if (code >= 95) { icon = "⛈️"; desc = "Tormenta"; }
+
+        setWeather(`${icon} ${desc}, ${temp}°C`);
+      } catch (error) {
+        setWeather("☀️ San Rafael");
+      }
+    };
+
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 3600000); // 1 hora
     return () => clearInterval(interval);
   }, []);
 
@@ -31,7 +61,7 @@ export default function Navbar() {
         <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
         <span className="flex items-center gap-1">🕒 {time || "--:--"}</span>
         <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
-        <span className="flex items-center gap-1">☀️ Despejado, 22°C</span>
+        <span className="flex items-center gap-1">{weather || "Cargando clima..."}</span>
       </div>
 
       {/* Nivel 3: Botonera Pegajosa (Sticky) */}
