@@ -13,8 +13,9 @@ export async function POST(request) {
 
     // Autenticación con Google
     if (!process.env.GOOGLE_PRIVATE_KEY || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) {
-      console.error('Faltan credenciales de Google en las variables de entorno.');
-      return NextResponse.json({ error: 'Faltan credenciales de Google en el servidor. Revisa Vercel.' }, { status: 500 });
+      const availableKeys = Object.keys(process.env).filter(k => k.includes('GOOGLE') || k.includes('GEMINI') || k.includes('IMGBB')).join(', ');
+      console.error('Faltan credenciales. Encontradas:', availableKeys);
+      return NextResponse.json({ error: `Faltan credenciales de Google. Vercel solo está viendo estas llaves: [${availableKeys}]. Revisa Vercel.` }, { status: 500 });
     }
 
     const serviceAccountAuth = new JWT({
