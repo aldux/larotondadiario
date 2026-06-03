@@ -16,6 +16,9 @@ export const metadata = {
     siteName: "La Rotonda",
     locale: "es_AR",
     type: "website",
+  },
+  verification: {
+    google: "google37f2ecc8fbd1c1aa.html",
   }
 };
 
