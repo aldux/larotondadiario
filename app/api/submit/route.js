@@ -12,6 +12,11 @@ export async function POST(request) {
     }
 
     // Autenticación con Google
+    if (!process.env.GOOGLE_PRIVATE_KEY || !process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) {
+      console.error('Faltan credenciales de Google en las variables de entorno.');
+      return NextResponse.json({ error: 'Faltan credenciales de Google en el servidor. Revisa Vercel.' }, { status: 500 });
+    }
+
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
       key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -62,6 +67,6 @@ export async function POST(request) {
     return NextResponse.json({ success: true, message: 'Datos guardados correctamente en pendiente' });
   } catch (error) {
     console.error('Error en la API de carga:', error);
-    return NextResponse.json({ error: 'Error interno al guardar los datos' }, { status: 500 });
+    return NextResponse.json({ error: 'Error interno: ' + error.message }, { status: 500 });
   }
 }
