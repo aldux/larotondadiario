@@ -7,8 +7,16 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "La Rotonda - Portal Local",
-  description: "Portal local de noticias y clasificados de compra/venta",
+  title: "La Rotonda | Diario Digital de San Rafael",
+  description: "Portal local de noticias, periodismo ciudadano y clasificados de compra/venta en San Rafael, Mendoza.",
+  keywords: ["San Rafael", "Mendoza", "noticias", "diario", "clasificados", "comunidad", "periodismo ciudadano"],
+  openGraph: {
+    title: "La Rotonda | Diario Digital de San Rafael",
+    description: "Portal local de noticias, periodismo ciudadano y clasificados de compra/venta en San Rafael, Mendoza.",
+    siteName: "La Rotonda",
+    locale: "es_AR",
+    type: "website",
+  }
 };
 
 import Navbar from "@/components/Navbar";

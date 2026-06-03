@@ -21,6 +21,27 @@ async function getNewsById(id) {
 }
 
 // Next.js 15: params es una Promesa
+export async function generateMetadata({ params }) {
+  const resolvedParams = await params;
+  const news = await getNewsById(resolvedParams.id);
+
+  if (!news) {
+    return {
+      title: 'Noticia no encontrada | La Rotonda',
+    };
+  }
+
+  return {
+    title: `${news.titulo} | La Rotonda`,
+    description: news.copete || "Lee la noticia completa en La Rotonda, el diario digital de San Rafael.",
+    openGraph: {
+      title: `${news.titulo} | La Rotonda`,
+      description: news.copete || "Lee la noticia completa en La Rotonda.",
+      images: news.imagen_url ? [{ url: news.imagen_url }] : [],
+    },
+  };
+}
+
 export default async function NewsArticle({ params }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
