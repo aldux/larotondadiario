@@ -46,7 +46,7 @@ async function fetchClasificados() {
         imagen_url: arr[5],
         estado: arr[6]
       };
-    }).filter(r => r.estado === 'Aprobado');
+    }).filter(r => r.estado && r.estado.trim().toLowerCase() === 'aprobado');
   } catch (error) {
     console.error("Error fetching clasificados:", error);
     return [];

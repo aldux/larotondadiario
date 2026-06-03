@@ -68,7 +68,7 @@ export default async function sitemap() {
         rows.map(row => {
           const arr = row._rawData || [];
           return { id: arr[0], estado: arr[6] };
-        }).filter(r => r.estado === 'Aprobado' && r.id).forEach(item => {
+        }).filter(r => r.estado && r.estado.trim().toLowerCase() === 'aprobado' && r.id).forEach(item => {
           sitemapEntries.push({
             url: `${baseUrl}/clasificados/${item.id}`,
             lastModified: new Date(),
@@ -85,7 +85,7 @@ export default async function sitemap() {
         rows.map(row => {
           const arr = row._rawData || [];
           return { id: arr[0], estado: arr[6] };
-        }).filter(r => r.estado === 'Aprobado' && r.id).forEach(item => {
+        }).filter(r => r.estado && r.estado.trim().toLowerCase() === 'aprobado' && r.id).forEach(item => {
           sitemapEntries.push({
             url: `${baseUrl}/comunidad/${item.id}`,
             lastModified: new Date(),
