@@ -131,6 +131,12 @@ export default function SubmitModal({ seccion, isOpen, onClose }) {
 
             {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
 
+            <div className="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3 mt-1">
+              <p className="text-xs text-orange-800 dark:text-orange-300 leading-relaxed">
+                <span className="font-bold">⚠️ Aprobación:</span> Todas las publicaciones son revisadas por nuestro equipo. El tiempo estimado de aprobación es de <strong>2 horas</strong> durante el día, y puede demorar hasta <strong>10 horas</strong> en horario nocturno.
+              </p>
+            </div>
+
             <button 
               type="submit" 
               disabled={isSubmitting}

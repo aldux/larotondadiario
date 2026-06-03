@@ -47,6 +47,9 @@ export default async function ClasificadosPage() {
         </h1>
         <SubmitModalButton seccion="Clasificados" label="Publicar un aviso" />
       </div>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+        ℹ️ <span className="font-semibold">Aprobación de avisos:</span> Para mantener la seguridad de la plataforma, todos los clasificados son moderados. La aprobación demora ~2hs durante el día y hasta 10hs por la noche.
+      </p>
 
       {data.length === 0 ? (
         <div className="w-full p-12 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">

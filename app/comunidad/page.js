@@ -48,9 +48,14 @@ export default async function ComunidadPage() {
         <SubmitModalButton seccion="Comunidad" label="Subir un reporte" />
       </div>
 
-      <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
-        El espacio de periodismo ciudadano y ayuda vecinal. Publicá noticias locales, objetos perdidos, reclamos o eventos de tu barrio.
-      </p>
+      <div className="mb-8">
+        <p className="text-gray-600 dark:text-gray-300 text-lg mb-2">
+          El espacio de periodismo ciudadano y ayuda vecinal. Publicá noticias locales, objetos perdidos, reclamos o eventos de tu barrio.
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          ℹ️ <span className="font-semibold">Aprobación:</span> Para mantener un entorno seguro, todos los reportes son moderados. La aprobación demora ~2hs durante el día y hasta 10hs por la noche.
+        </p>
+      </div>
 
       {data.length === 0 ? (
         <div className="w-full p-12 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
