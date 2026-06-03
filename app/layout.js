@@ -35,6 +35,11 @@ export default function RootLayout({ children }) {
         <main className="flex-grow">
           {children}
         </main>
+        <footer className="w-full py-4 px-6 text-right">
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            Hecho con 🍷 por <a href="https://instagram.com/MalbecyCode" target="_blank" rel="noopener noreferrer" className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">@MalbecyCode</a>
+          </p>
+        </footer>
       </body>
     </html>
   );
