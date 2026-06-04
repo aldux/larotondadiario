@@ -74,8 +74,11 @@ export default function Navbar() {
               <Link href="/" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
                 Portada
               </Link>
-              <Link href="#" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
+              <Link href="/#locales" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
                 Locales
+              </Link>
+              <Link href="/#nacionales" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
+                Nacionales
               </Link>
               <Link href="/clasificados" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
                 Clasificados

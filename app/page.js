@@ -69,7 +69,7 @@ export default async function Home() {
           <div className="md:col-span-8 lg:col-span-8 flex flex-col">
             
             {/* Sección Locales */}
-            <h1 className="text-3xl font-extrabold mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1">Noticias Locales</h1>
+            <h1 id="locales" className="text-3xl font-extrabold mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1 scroll-mt-20">Noticias Locales</h1>
             
             {newsData.filter(n => n.categoria === 'Local' || !n.categoria).length === 0 ? (
               <div className="w-full p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 mb-10">
@@ -99,7 +99,7 @@ export default async function Home() {
             )}
 
             {/* Sección Nacionales */}
-            <h1 className="text-3xl font-extrabold mt-10 mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1">Noticias Nacionales</h1>
+            <h1 id="nacionales" className="text-3xl font-extrabold mt-10 mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1 scroll-mt-20">Noticias Nacionales</h1>
             
             {newsData.filter(n => n.categoria === 'Nacional').length === 0 ? (
               <div className="w-full p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
