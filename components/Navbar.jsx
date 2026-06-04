@@ -75,7 +75,7 @@ export default function Navbar({ loginButton }) {
           {/* Left: Logo */}
           <div className="flex-shrink-0 flex items-center mr-6">
             <Link href="/">
-              <Logo width={64} height={64} className="h-16 w-auto" />
+              <Logo width={80} height={80} className="h-20 w-auto" />
             </Link>
           </div>
 
