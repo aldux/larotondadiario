@@ -5,12 +5,16 @@ import Logo from "./Logo";
 
 export default function Navbar() {
   const [time, setTime] = useState("");
+  const [date, setDate] = useState("");
   const [weather, setWeather] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
       setTime(now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }));
+      
+      const formattedDate = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      setDate(formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1));
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
@@ -57,7 +61,7 @@ export default function Navbar() {
 
       {/* Nivel 2: Franja Informativa */}
       <div className="flex justify-center items-center gap-3 sm:gap-4 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 pb-6 flex-wrap">
-        <span className="flex items-center gap-1">📍 San Rafael, Mendoza</span>
+        <span className="flex items-center gap-1">📍 San Rafael, Mendoza - {date || "Cargando..."}</span>
         <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
         <span className="flex items-center gap-1">🕒 {time || "--:--"}</span>
         <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
