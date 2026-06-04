@@ -75,7 +75,8 @@ async function runScraper() {
     
     console.log('Obteniendo filas para evitar duplicados históricos...');
     const rows = await sheet.getRows();
-    const existingTitles = new Set(rows.map(row => row.get('titulo'))); 
+    const existingTitles = new Set(rows.map(row => row.get('titulo') ? row.get('titulo').trim().toLowerCase() : '')); 
+    const existingSlugs = new Set(rows.map(row => row.get('id') ? row.get('id').trim() : ''));
     
     const scrapedMap = new Map();
 
@@ -107,9 +108,10 @@ async function runScraper() {
             : link_original;
 
           const slug = title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+          const normalizedTitle = title.trim().toLowerCase();
 
           // Guardamos en un mapa para evitar duplicados en el mismo sitio
-          if (!existingTitles.has(title)) {
+          if (!existingTitles.has(normalizedTitle) && !existingSlugs.has(slug)) {
             if (scrapedMap.has(title)) {
               const existing = scrapedMap.get(title);
               if (!existing.imagen_url && image_url) {
@@ -169,7 +171,8 @@ async function runScraper() {
       delete news.usaIA; // Limpiamos esta propiedad para que no intente insertarla en Sheets como columna
       
       newsToInsert.push(news);
-      existingTitles.add(news.titulo); // Prevenir duplicados si corremos de nuevo rápido
+      existingTitles.add(news.titulo.trim().toLowerCase()); // Prevenir duplicados si corremos de nuevo rápido
+      existingSlugs.add(news.id);
     }
 
     // PASO C: GUARDAR EN GOOGLE SHEETS
