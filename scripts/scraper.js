@@ -180,6 +180,28 @@ async function runScraper() {
       // Nota: Asegúrate de tener una columna "categoria" en tu Google Sheet al lado de las otras
       await sheet.addRows(newsToInsert);
       console.log(`¡${newsToInsert.length} noticias originales generadas con IA guardadas exitosamente en Google Sheets!`);
+
+      // PASO D: ENVIAR A MAKE.COM (WEBHOOK) PARA PUBLICAR EN FACEBOOK
+      if (process.env.MAKE_WEBHOOK_URL) {
+        console.log("Enviando nuevas noticias al Webhook de Make.com...");
+        for (const news of newsToInsert) {
+          try {
+            await axios.post(process.env.MAKE_WEBHOOK_URL, {
+              titulo: news.titulo,
+              copete: news.copete,
+              imagen: news.imagen_url,
+              enlace_original: news.link_original,
+              slug: news.id,
+              categoria: news.categoria
+            });
+            // Pequeña pausa de 2 segundos para no saturar el webhook de Make
+            await new Promise(r => setTimeout(r, 2000));
+          } catch (err) {
+            console.error(`Error enviando al webhook la noticia "${news.titulo}":`, err.message);
+          }
+        }
+        console.log("¡Webhook enviado con éxito!");
+      }
     }
 
   } catch (error) {
