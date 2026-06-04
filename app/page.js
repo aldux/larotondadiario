@@ -4,6 +4,8 @@ import ClassifiedCard from "@/components/ClassifiedCard";
 import Papa from "papaparse";
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
+import { auth } from "@/auth";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 const NEWS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsmHuNFq21hZNK1d-lekS443MWeyGwGhdL68qUEU1B1j6Hndf905KEFlQAKvh9rR1LOoRbA3XxZzBq/pub?gid=0&single=true&output=csv";
 
@@ -54,9 +56,10 @@ async function fetchClasificados() {
 }
 
 export default async function Home() {
-  const [newsData, classifiedsData] = await Promise.all([
+  const [newsData, classifiedsData, session] = await Promise.all([
     fetchCSVData(NEWS_CSV_URL),
-    fetchClasificados()
+    fetchClasificados(),
+    auth()
   ]);
 
   return (
@@ -157,12 +160,19 @@ export default async function Home() {
                 )}
               </div>
               
-              <div className="mt-6 p-6 bg-rotonda-green-dark dark:bg-slate-900 rounded-xl border border-rotonda-green text-center shadow-lg">
+              <div className="mt-6 p-6 bg-rotonda-green-dark dark:bg-slate-900 rounded-xl border border-rotonda-green text-center shadow-lg flex flex-col items-center">
                 <h4 className="font-bold text-white mb-2">¿Querés vender algo?</h4>
                 <p className="text-sm text-green-100 dark:text-gray-400 mb-4">Publicá tu artículo gratis y llegá a toda la ciudad hoy mismo.</p>
-                <Link href="/clasificados" className="block text-center w-full bg-rotonda-gold hover:bg-rotonda-gold-dark text-white font-bold py-2 rounded-lg transition-colors shadow-md">
-                  Crear publicación
-                </Link>
+                {!session?.user ? (
+                  <div className="w-full flex flex-col items-center gap-3 mt-2">
+                    <span className="text-sm text-green-200 font-medium">Registrate con un click para vender:</span>
+                    <GoogleLoginButton />
+                  </div>
+                ) : (
+                  <Link href="/clasificados" className="block text-center w-full bg-rotonda-gold hover:bg-rotonda-gold-dark text-white font-bold py-2 rounded-lg transition-colors shadow-md">
+                    Crear publicación
+                  </Link>
+                )}
               </div>
             </div>
           </aside>
