@@ -17,7 +17,7 @@ async function fetchCSVData(url) {
     }
     const csvText = await res.text();
     const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-    return parsed.data;
+    return parsed.data.reverse();
   } catch (error) {
     console.error("Fetch error:", error);
     return [];
@@ -46,7 +46,7 @@ async function fetchClasificados() {
         imagen_url: arr[5],
         estado: arr[6]
       };
-    }).filter(r => r.estado && r.estado.trim().toLowerCase() === 'aprobado');
+    }).filter(r => r.estado && r.estado.trim().toLowerCase() === 'aprobado').reverse();
   } catch (error) {
     console.error("Error fetching clasificados:", error);
     return [];
@@ -67,15 +67,17 @@ export default async function Home() {
           
           {/* Feed de Noticias (70%) */}
           <div className="md:col-span-8 lg:col-span-8 flex flex-col">
-            <h1 className="text-3xl font-extrabold mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1">Últimas Noticias</h1>
             
-            {newsData.length === 0 ? (
-              <div className="w-full p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
-                <p className="text-gray-500 dark:text-gray-400 font-medium">No hay publicaciones recientes</p>
+            {/* Sección Locales */}
+            <h1 className="text-3xl font-extrabold mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1">Noticias Locales</h1>
+            
+            {newsData.filter(n => n.categoria === 'Local' || !n.categoria).length === 0 ? (
+              <div className="w-full p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700 mb-10">
+                <p className="text-gray-500 dark:text-gray-400 font-medium">No hay noticias locales recientes</p>
               </div>
             ) : (
-              newsData.map((news, index) => {
-                const showAd = index > 0 && index % 3 === 0;
+              newsData.filter(n => n.categoria === 'Local' || !n.categoria).map((news, index) => {
+                const showAd = index > 0 && index % 4 === 0;
                 return (
                   <div key={news.id || index}>
                     {showAd && (
@@ -95,6 +97,37 @@ export default async function Home() {
                 );
               })
             )}
+
+            {/* Sección Nacionales */}
+            <h1 className="text-3xl font-extrabold mt-10 mb-6 text-rotonda-green-dark dark:text-rotonda-gold border-b-4 border-rotonda-gold inline-block pb-1">Noticias Nacionales</h1>
+            
+            {newsData.filter(n => n.categoria === 'Nacional').length === 0 ? (
+              <div className="w-full p-8 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+                <p className="text-gray-500 dark:text-gray-400 font-medium">No hay noticias nacionales recientes</p>
+              </div>
+            ) : (
+              newsData.filter(n => n.categoria === 'Nacional').map((news, index) => {
+                const showAd = index > 0 && index % 4 === 0;
+                return (
+                  <div key={`nac-${news.id || index}`}>
+                    {showAd && (
+                      <div className="w-full min-h-[120px] bg-gray-100 dark:bg-gray-800 rounded-xl mb-6 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                        <span className="text-gray-400 dark:text-gray-500 font-medium text-sm">
+                          Espacio Publicitario (AdSense In-Feed)
+                        </span>
+                      </div>
+                    )}
+                    <NewsCard 
+                      title={news.titulo || news.title || "Sin título"}
+                      summary={news.copete || news.summary}
+                      image={news.imagen_url || news.image}
+                      link={news.id ? `/noticias/${news.id}` : (news.link_original || news.link)}
+                    />
+                  </div>
+                );
+              })
+            )}
+
           </div>
 
           {/* Clasificados (30%) */}

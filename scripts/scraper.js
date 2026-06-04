@@ -13,9 +13,9 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 const SOURCES = [
   // --- NOTICIAS LOCALES (San Rafael y Sur de Mendoza) ---
   { url: 'https://diariosanrafael.com.ar/categoria/locales/', categoria: 'Local', usaIA: true },
-  { url: 'https://www.mediamendoza.com/seccion/san-rafael', categoria: 'Local', usaIA: true },
-  { url: 'https://www.sitioandino.com.ar/seccion/san-rafael/', categoria: 'Local', usaIA: true },
-  { url: 'https://infoya.com.ar/seccion/san-rafael/', categoria: 'Local', usaIA: true },
+  { url: 'https://www.mediamendoza.com/', categoria: 'Local', usaIA: true },
+  { url: 'https://www.sitioandino.com.ar/', categoria: 'Local', usaIA: true },
+  { url: 'https://diarioinfoya.com.ar/', categoria: 'Local', usaIA: true },
 
   // --- NOTICIAS NACIONALES (Argentina) ---
   { url: 'https://www.infobae.com/politica/', categoria: 'Nacional', usaIA: false },
@@ -155,6 +155,8 @@ async function runScraper() {
           console.log(`   -> Generando contenido original con Gemini AI...`);
           const rewrittenBody = await rewriteNewsWithAI(originalBody);
           news.cuerpo_noticia = rewrittenBody;
+          // Esperamos 15 segundos para evitar el límite gratuito de Gemini de 5 peticiones por minuto
+          await new Promise(r => setTimeout(r, 15000));
         } else {
           console.log(`   -> Saltando IA (fuente con usaIA: false). Guardando texto original.`);
           news.cuerpo_noticia = originalBody;
