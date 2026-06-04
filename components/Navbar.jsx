@@ -52,6 +52,13 @@ export default function Navbar({ loginButton }) {
 
   return (
     <header className="w-full bg-white dark:bg-slate-950 border-b-4 border-rotonda-gold shadow-sm flex flex-col">
+      {/* Banner LED */}
+      <div className="w-full bg-black border-b-2 border-yellow-500 py-1.5 overflow-hidden flex items-center">
+        <div className="animate-marquee font-mono text-yellow-400 font-bold text-sm sm:text-base tracking-widest drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]">
+          SITIO EN CONSTRUCCIÓN - PERDÓN POR LAS MOLESTIAS - SITIO EN CONSTRUCCIÓN - PERDÓN POR LAS MOLESTIAS - SITIO EN CONSTRUCCIÓN - PERDÓN POR LAS MOLESTIAS
+        </div>
+      </div>
+
       {/* Nivel 1: Logo Centrado */}
       <div className="flex justify-center items-center pt-8 pb-3">
         <Link href="/">
