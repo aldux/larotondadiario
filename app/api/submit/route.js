@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
+import { auth } from "@/auth";
 
 export async function POST(request) {
   try {
+    const session = await auth();
+    const userEmail = session?.user?.email || '';
+    
     const data = await request.json();
     const { seccion, formValues } = data;
 
@@ -40,7 +44,7 @@ export async function POST(request) {
 
     let newRowArray = [];
     if (seccion === 'Clasificados') {
-      // id, fecha, titulo, descripcion, contacto, imagen_url, estado
+      // id, fecha, titulo, descripcion, contacto, imagen_url, estado, autorEmail
       newRowArray = [
         id,
         fecha,
@@ -48,7 +52,8 @@ export async function POST(request) {
         formValues.descripcion || '',
         formValues.contacto || '',
         formValues.imagen_url || '',
-        'Pendiente'
+        'Pendiente',
+        userEmail
       ];
     } else if (seccion === 'Comunidad') {
       // id, fecha, tipo, titulo, descripcion, imagen_url, estado

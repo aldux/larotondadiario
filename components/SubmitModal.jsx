@@ -137,6 +137,14 @@ export default function SubmitModal({ seccion, isOpen, onClose }) {
               </p>
             </div>
 
+            {seccion === 'Clasificados' && (
+              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-1">
+                <p className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed">
+                  <span className="font-bold">💡 Importante:</span> Recordá <strong>iniciar sesión con Google</strong> en el menú superior antes de publicar tu aviso. De esta manera quedará enlazado a tu cuenta y luego vas a poder marcarlo como "Vendido".
+                </p>
+              </div>
+            )}
+
             <button 
               type="submit" 
               disabled={isSubmitting}
