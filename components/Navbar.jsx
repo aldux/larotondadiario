@@ -51,68 +51,57 @@ export default function Navbar({ loginButton }) {
   }, []);
 
   return (
-    <header className="w-full bg-white dark:bg-slate-950 border-b-4 border-rotonda-gold shadow-sm flex flex-col">
+    <header className="w-full shadow-sm flex flex-col z-50 sticky top-0">
       {/* Banner LED */}
-      <div className="w-full bg-black border-b-2 border-yellow-500 py-1.5 overflow-hidden flex items-center">
-        <div className="animate-marquee font-mono text-yellow-400 font-bold text-sm sm:text-base tracking-widest drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]">
+      <div className="w-full bg-black py-1 overflow-hidden flex items-center">
+        <div className="animate-marquee font-mono text-yellow-400 font-bold text-xs sm:text-sm tracking-widest drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]">
           SITIO EN CONSTRUCCIÓN - PERDÓN POR LAS MOLESTIAS - SITIO EN CONSTRUCCIÓN - PERDÓN POR LAS MOLESTIAS - SITIO EN CONSTRUCCIÓN - PERDÓN POR LAS MOLESTIAS
         </div>
       </div>
 
-      {/* Nivel 1: Logo Centrado */}
-      <div className="flex justify-center items-center pt-8 pb-3">
-        <Link href="/">
-          <Logo width={250} height={250} className="h-40 sm:h-48" />
-        </Link>
-      </div>
-
-      {/* Nivel 2: Franja Informativa */}
-      <div className="flex justify-center items-center gap-3 sm:gap-4 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 pb-6 flex-wrap">
+      {/* Utility Strip */}
+      <div className="w-full bg-slate-100 dark:bg-slate-800 flex justify-center items-center gap-4 text-[10px] sm:text-xs font-medium text-slate-600 dark:text-slate-300 h-8 border-b border-slate-200 dark:border-slate-700">
         <span className="flex items-center gap-1">📍 San Rafael, Mendoza - {date || "Cargando..."}</span>
-        <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
+        <span className="text-slate-300 dark:text-slate-600 hidden sm:inline">|</span>
         <span className="flex items-center gap-1">🕒 {time || "--:--"}</span>
-        <span className="text-slate-300 dark:text-slate-700 hidden sm:inline">|</span>
+        <span className="text-slate-300 dark:text-slate-600 hidden sm:inline">|</span>
         <span className="flex items-center gap-1">{weather || "Cargando clima..."}</span>
       </div>
 
-      {/* Nivel 3: Botonera Pegajosa (Sticky) */}
-      <div className="sticky top-0 z-50 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-t border-slate-100 dark:border-slate-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
-            
-            {/* Navegación principal */}
-            <nav className="flex gap-6 sm:gap-8 items-center overflow-x-auto w-full sm:w-auto no-scrollbar">
-              <Link href="/" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
-                Portada
-              </Link>
-              <Link href="/#locales" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
-                Locales
-              </Link>
-              <Link href="/#nacionales" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
-                Nacionales
-              </Link>
-              <Link href="/clasificados" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
-                Clasificados
-              </Link>
-              <Link href="/comunidad" className="text-sm font-bold text-rotonda-green-dark hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">
-                Comunidad
-              </Link>
-            </nav>
+      {/* Main Header Row */}
+      <div className="w-full bg-white dark:bg-slate-950 py-2 border-b border-gray-200 dark:border-gray-800">
+        <div className="max-w-[1400px] mx-auto px-4 flex justify-between items-center h-16">
+          
+          {/* Left: Logo */}
+          <div className="flex-shrink-0 flex items-center mr-6">
+            <Link href="/">
+              <Logo width={64} height={64} className="h-16 w-auto" />
+            </Link>
+          </div>
 
-            {/* Buscador y Botón de Auth */}
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex relative w-64">
-                <input type="text" placeholder="Buscar..." className="w-full bg-slate-100 dark:bg-slate-800 rounded-full py-1.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-rotonda-gold border border-transparent transition-all" />
-                <button className="absolute right-3 top-1.5 text-slate-400 hover:text-rotonda-gold transition-colors">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
-              </div>
-              
-              {/* Botón de Google Login (inyectado desde el layout) */}
-              {loginButton}
+          {/* Center: Nav Menu */}
+          <nav className="flex gap-4 lg:gap-8 items-center flex-grow justify-start lg:justify-center overflow-x-auto no-scrollbar">
+            <Link href="/" className="text-[13px] font-bold text-[#004d30] hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">PORTADA</Link>
+            <Link href="/#locales" className="text-[13px] font-bold text-[#004d30] hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">LOCALES</Link>
+            <Link href="/#nacionales" className="text-[13px] font-bold text-[#004d30] hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">NACIONALES</Link>
+            <Link href="/clasificados" className="text-[13px] font-bold text-[#004d30] hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">CLASIFICADOS</Link>
+            <Link href="/comunidad" className="text-[13px] font-bold text-[#004d30] hover:text-rotonda-gold dark:text-gray-300 dark:hover:text-rotonda-gold transition-colors whitespace-nowrap uppercase tracking-wider">COMUNIDAD</Link>
+          </nav>
+
+          {/* Right: Search & Profile */}
+          <div className="flex items-center gap-4 flex-shrink-0 ml-4 lg:ml-6">
+            <div className="hidden md:flex relative w-48 lg:w-56">
+              <input type="text" placeholder="Buscar..." className="w-full bg-slate-100 dark:bg-slate-800 rounded-full py-1.5 px-4 text-xs lg:text-sm focus:outline-none focus:ring-1 focus:ring-rotonda-gold border border-slate-200 dark:border-slate-700 transition-all" />
+              <button className="absolute right-3 top-1.5 text-slate-400 hover:text-rotonda-gold transition-colors">
+                <svg className="w-3.5 h-3.5 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </button>
             </div>
             
+            <div className="flex items-center">
+              {loginButton}
+            </div>
           </div>
+
         </div>
       </div>
     </header>
