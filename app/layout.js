@@ -23,6 +23,7 @@ export const metadata = {
 };
 
 import Navbar from "@/components/Navbar";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export default function RootLayout({ children }) {
   return (
@@ -31,7 +32,7 @@ export default function RootLayout({ children }) {
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground">
-        <Navbar />
+        <Navbar loginButton={<GoogleLoginButton />} />
         <main className="flex-grow">
           {children}
         </main>

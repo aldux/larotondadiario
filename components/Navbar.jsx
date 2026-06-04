@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link";
 import Logo from "./Logo";
 
-export default function Navbar() {
+export default function Navbar({ loginButton }) {
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
   const [weather, setWeather] = useState("");
@@ -92,12 +92,17 @@ export default function Navbar() {
               </Link>
             </nav>
 
-            {/* Buscador */}
-            <div className="hidden md:flex relative w-64 ml-4">
-              <input type="text" placeholder="Buscar..." className="w-full bg-slate-100 dark:bg-slate-800 rounded-full py-1.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-rotonda-gold border border-transparent transition-all" />
-              <button className="absolute right-3 top-1.5 text-slate-400 hover:text-rotonda-gold transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-              </button>
+            {/* Buscador y Botón de Auth */}
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex relative w-64">
+                <input type="text" placeholder="Buscar..." className="w-full bg-slate-100 dark:bg-slate-800 rounded-full py-1.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-rotonda-gold border border-transparent transition-all" />
+                <button className="absolute right-3 top-1.5 text-slate-400 hover:text-rotonda-gold transition-colors">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+              </div>
+              
+              {/* Botón de Google Login (inyectado desde el layout) */}
+              {loginButton}
             </div>
             
           </div>
