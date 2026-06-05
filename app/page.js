@@ -7,21 +7,34 @@ import { JWT } from 'google-auth-library';
 import { auth } from "@/auth";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 
-const NEWS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsmHuNFq21hZNK1d-lekS443MWeyGwGhdL68qUEU1B1j6Hndf905KEFlQAKvh9rR1LOoRbA3XxZzBq/pub?gid=0&single=true&output=csv";
-
-async function fetchCSVData(url) {
+async function fetchNoticias() {
   try {
-    // Para ver los cambios al instante durante el desarrollo, lo ponemos en 0. 
-    // Para producción, se recomienda volver a poner 600 (10 minutos).
-    const res = await fetch(url, { next: { revalidate: 0 } });
-    if (!res.ok) {
-      throw new Error(`Error al traer datos: ${res.statusText}`);
-    }
-    const csvText = await res.text();
-    const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-    return parsed.data.reverse();
+    const serviceAccountAuth = new JWT({
+      email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+    const sheet = doc.sheetsByTitle['Noticias'] || doc.sheetsByIndex[0];
+    if (!sheet) return [];
+    
+    // Obtenemos las filas. El límite por defecto es suficiente para las notas recientes
+    const rows = await sheet.getRows({ offset: Math.max(0, sheet.rowCount - 200), limit: 200 }); 
+    
+    return rows.map(row => {
+      return {
+        id: row.get('id'),
+        titulo: row.get('titulo'),
+        copete: row.get('copete'),
+        imagen_url: row.get('imagen_url'),
+        link_original: row.get('link_original'),
+        categoria: row.get('categoria'),
+        cuerpo_noticia: row.get('cuerpo_noticia')
+      };
+    }).filter(n => n.id && n.titulo).reverse();
   } catch (error) {
-    console.error("Fetch error:", error);
+    console.error("Error fetching noticias:", error);
     return [];
   }
 }
@@ -57,7 +70,7 @@ async function fetchClasificados() {
 
 export default async function Home() {
   const [newsData, classifiedsData, session] = await Promise.all([
-    fetchCSVData(NEWS_CSV_URL),
+    fetchNoticias(),
     fetchClasificados(),
     auth()
   ]);

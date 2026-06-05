@@ -1,21 +1,37 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import Papa from 'papaparse';
-
-const NEWS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSsmHuNFq21hZNK1d-lekS443MWeyGwGhdL68qUEU1B1j6Hndf905KEFlQAKvh9rR1LOoRbA3XxZzBq/pub?gid=0&single=true&output=csv";
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 
 async function getNewsById(id) {
   try {
-    // Usamos revalidate: 0 temporalmente para desarrollo. En producción cambiar a 600
-    const res = await fetch(NEWS_CSV_URL, { next: { revalidate: 0 } }); 
-    if (!res.ok) throw new Error("Error en el fetch");
-    const text = await res.text();
-    const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+    const serviceAccountAuth = new JWT({
+      email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAuth);
+    await doc.loadInfo();
+    const sheet = doc.sheetsByTitle['Noticias'] || doc.sheetsByIndex[0];
+    if (!sheet) return null;
     
-    // Buscar la fila de la planilla cuyo "id" (el slug que generó el scraper) coincida con la URL
-    return parsed.data.find(news => news.id === id) || null;
+    // Obtenemos solo las ultimas 300 para no hacer lenta la busqueda, el id suele estar entre las recientes
+    const rows = await sheet.getRows({ offset: Math.max(0, sheet.rowCount - 300), limit: 300 }); 
+    const targetRow = rows.find(row => row.get('id') === id);
+    
+    if (!targetRow) return null;
+    
+    return {
+      id: targetRow.get('id'),
+      titulo: targetRow.get('titulo'),
+      copete: targetRow.get('copete'),
+      imagen_url: targetRow.get('imagen_url'),
+      link_original: targetRow.get('link_original'),
+      categoria: targetRow.get('categoria'),
+      cuerpo_noticia: targetRow.get('cuerpo_noticia')
+    };
   } catch (error) {
-    console.error(error);
+    console.error("Error en getNewsById:", error);
     return null;
   }
 }
