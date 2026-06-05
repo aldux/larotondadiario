@@ -34,7 +34,7 @@ const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAut
 // Función para extraer texto puro del enlace de la noticia
 async function extractBody(url) {
   try {
-    const { data } = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const { data } = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' } });
     const $ = cheerio.load(data);
     const ps = [];
     $('p').each((i, el) => {
@@ -84,7 +84,7 @@ async function runScraper() {
     for (const source of SOURCES) {
       console.log(`Buscando en ${source.url} (${source.categoria})...`);
       try {
-        const { data: html } = await axios.get(source.url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+        const { data: html } = await axios.get(source.url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' } });
         const $ = cheerio.load(html);
         
         // Selectores amplios para atrapar artículos en diferentes maquetaciones de medios

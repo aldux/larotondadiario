@@ -2,7 +2,7 @@ name: News Scraper
 
 on:
   schedule:
-    - cron: '0 */6 * * *' # Corre cada 6 horas
+    - cron: '0 * * * *' # Corre cada 1 hora
   workflow_dispatch: # Permite correrlo manualmente con un botón desde GitHub
 
 env:
