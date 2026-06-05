@@ -177,9 +177,14 @@ async function runScraper() {
 
     // PASO C: GUARDAR EN GOOGLE SHEETS
     if (newsToInsert.length > 0) {
+      // Invertimos el array antes de insertarlo para que las noticias más antiguas del lote se inserten primero,
+      // y la noticia más nueva del lote quede al final de la planilla.
+      // De esta forma, cuando la web hace un .reverse() de toda la planilla, la más nueva queda arriba de todo.
+      const newsReversed = [...newsToInsert].reverse();
+      
       // Nota: Asegúrate de tener una columna "categoria" en tu Google Sheet al lado de las otras
-      await sheet.addRows(newsToInsert);
-      console.log(`¡${newsToInsert.length} noticias originales generadas con IA guardadas exitosamente en Google Sheets!`);
+      await sheet.addRows(newsReversed);
+      console.log(`¡${newsReversed.length} noticias originales generadas con IA guardadas exitosamente en Google Sheets!`);
 
       // PASO D: ENVIAR A MAKE.COM (WEBHOOK) PARA PUBLICAR EN FACEBOOK
       if (process.env.MAKE_WEBHOOK_URL) {
