@@ -204,8 +204,8 @@ async function runScraper() {
             
         const $ = cheerio.load(htmlText);
         
-        // Ejecutar la lógica de extracción específica de este portal
-        const items = source.extract($);
+        // Ejecutar la lógica de extracción específica de este portal y tomar SOLO las 4 primeras (las más nuevas)
+        const items = source.extract($).slice(0, 4);
         
         items.forEach((item) => {
           let { title, summary, image_url, link_original } = item;
