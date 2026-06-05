@@ -111,10 +111,29 @@ const serviceAccountAuth = new JWT({
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAuth);
 
 // Función para extraer texto puro del enlace de la noticia
-async function extractBody(url) {
+async function extractBody(url, source) {
   try {
-    const { data } = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' } });
-    const $ = cheerio.load(data);
+    const response = await axios.get(url, { 
+      responseType: 'arraybuffer',
+      timeout: 15000,
+      headers: { 
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'es-AR,es;q=0.8,en-US;q=0.5,en;q=0.3',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1'
+      } 
+    });
+    
+    const htmlText = source && source.encoding 
+        ? new TextDecoder(source.encoding).decode(response.data) 
+        : response.data.toString('utf-8');
+        
+    const $ = cheerio.load(htmlText);
     const ps = [];
     $('p').each((i, el) => {
       const text = $(el).text().trim();
@@ -243,7 +262,9 @@ async function runScraper() {
       const news = scrapedNews[i];
       console.log(`[${i+1}/${limit}] Procesando: ${news.titulo}`);
       
-      const { bodyText: originalBody, ogImage } = await extractBody(news.link_original);
+      // Buscamos a qué fuente pertenece la nota para pasar su encoding
+      const matchedSource = SOURCES.find(s => news.link_original.includes(new URL(s.url).hostname)) || {};
+      const { bodyText: originalBody, ogImage } = await extractBody(news.link_original, matchedSource);
       // og:image siempre tiene la mejor calidad y evita el lazy load de las miniaturas, sobreescribimos si existe
       if (ogImage) {
         news.imagen_url = ogImage;
