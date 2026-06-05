@@ -9,17 +9,96 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-// 2. CONFIGURACIÓN DE FUENTES
+// 2. CONFIGURACIÓN DE FUENTES CON SELECTORES QUIRÚRGICOS
 const SOURCES = [
-  // --- NOTICIAS LOCALES (San Rafael y Sur de Mendoza) ---
-  { url: 'https://diariosanrafael.com.ar/categoria/locales/', categoria: 'Local', usaIA: true },
-  { url: 'https://www.mediamendoza.com/', categoria: 'Local', usaIA: true },
-  { url: 'https://www.sitioandino.com.ar/', categoria: 'Local', usaIA: true },
-  { url: 'https://diarioinfoya.com.ar/', categoria: 'Local', usaIA: true },
+  // --- NOTICIAS LOCALES ---
+  { 
+    url: 'https://diariosanrafael.com.ar/categoria/locales/', 
+    categoria: 'Local', usaIA: true,
+    extract: ($) => {
+      const items = [];
+      $('a').each((i, el) => {
+         const title = $(el).text().trim();
+         const link = $(el).attr('href');
+         if (title.length > 30 && link && link.includes('/')) {
+             items.push({ title, link_original: link });
+         }
+      });
+      return items;
+    }
+  },
+  { 
+    url: 'https://www.mediamendoza.com/', 
+    categoria: 'Local', usaIA: true,
+    extract: ($) => {
+      const items = [];
+      $('article, .article, .card, .nota').each((i, el) => {
+         const title = $(el).find('h1, h2, h3').first().text().trim();
+         const link = $(el).find('a').first().attr('href');
+         const summary = $(el).find('p').first().text().trim() || '';
+         const img = $(el).find('img').attr('src') || $(el).find('img').attr('data-src') || '';
+         if (title && link) items.push({ title, link_original: link, summary, image_url: img });
+      });
+      return items;
+    }
+  },
+  { 
+    url: 'https://www.sitioandino.com.ar/', 
+    categoria: 'Local', usaIA: true,
+    extract: ($) => {
+      const items = [];
+      $('h2').each((i, el) => {
+         const title = $(el).text().trim();
+         const link = $(el).closest('a').attr('href') || $(el).find('a').attr('href') || $(el).parent().attr('href') || $(el).parent().parent().attr('href');
+         if (title && link) items.push({ title, link_original: link });
+      });
+      return items;
+    }
+  },
+  { 
+    url: 'https://diarioinfoya.com.ar/', 
+    categoria: 'Local', usaIA: true,
+    encoding: 'iso-8859-1', // Previene caracteres rotos
+    extract: ($) => {
+      const items = [];
+      $('h2').each((i, el) => {
+         const title = $(el).text().trim();
+         const link = $(el).closest('a').attr('href') || $(el).find('a').attr('href') || $(el).parent().attr('href');
+         if (title && link) items.push({ title, link_original: link });
+      });
+      return items;
+    }
+  },
 
-  // --- NOTICIAS NACIONALES (Argentina) ---
-  { url: 'https://www.infobae.com/politica/', categoria: 'Nacional', usaIA: false },
-  { url: 'https://tn.com.ar/politica/', categoria: 'Nacional', usaIA: false }
+  // --- NOTICIAS NACIONALES ---
+  { 
+    url: 'https://www.infobae.com/politica/', 
+    categoria: 'Nacional', usaIA: false,
+    extract: ($) => {
+      const items = [];
+      $('a:has(h2)').each((i, el) => {
+         const title = $(el).find('h2').text().trim();
+         const link = $(el).attr('href');
+         if (title && link) items.push({ title, link_original: link });
+      });
+      return items;
+    }
+  },
+  { 
+    url: 'https://tn.com.ar/politica/', 
+    categoria: 'Nacional', usaIA: false,
+    extract: ($) => {
+      const items = [];
+      $('article, .card, h2').each((i, el) => {
+         const title = $(el).find('h2').length ? $(el).find('h2').text().trim() : $(el).text().trim();
+         const link = $(el).find('a').attr('href') || $(el).closest('a').attr('href');
+         if (title && title.toLowerCase() !== 'minuto a minuto' && link && !link.includes('minuto-a-minuto')) {
+            items.push({ title, link_original: link });
+         }
+      });
+      return items;
+    }
+  }
 ];
 
 // Configuración de Google Sheets
@@ -80,28 +159,46 @@ async function runScraper() {
     
     const scrapedMap = new Map();
 
-    // PASO A: RECORRER TODAS LAS FUENTES
+    // PASO A: RECORRER TODAS LAS FUENTES CON SELECTORES ESPECÍFICOS
     for (const source of SOURCES) {
       console.log(`Buscando en ${source.url} (${source.categoria})...`);
       try {
-        const { data: html } = await axios.get(source.url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' } });
-        const $ = cheerio.load(html);
+        const response = await axios.get(source.url, { 
+          responseType: 'arraybuffer', // Necesario para decodificar Latin1
+          timeout: 15000,
+          headers: { 
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'es-AR,es;q=0.8,en-US;q=0.5,en;q=0.3',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1'
+          } 
+        });
         
-        // Selectores amplios para atrapar artículos en diferentes maquetaciones de medios
-        $('article, .article, .card, .nota').each((index, element) => {
-          const title = $(element).find('h1, h2, h3').first().text().trim();
-          const summary = $(element).find('p').first().text().trim() || '';
-          let image_url = $(element).find('img').attr('src') || $(element).find('img').attr('data-src') || $(element).find('img').attr('data-lazy-src') || '';
-          if (image_url.startsWith('data:image')) {
-            image_url = $(element).find('img').attr('data-src') || $(element).find('img').attr('data-lazy-src') || '';
-          }
+        const htmlText = source.encoding 
+            ? new TextDecoder(source.encoding).decode(response.data) 
+            : response.data.toString('utf-8');
+            
+        const $ = cheerio.load(htmlText);
+        
+        // Ejecutar la lógica de extracción específica de este portal
+        const items = source.extract($);
+        
+        items.forEach((item) => {
+          let { title, summary, image_url, link_original } = item;
+          summary = summary || '';
+          image_url = image_url || '';
+          
+          if (!title || !link_original) return;
+
           if (image_url && !image_url.startsWith('http')) {
              if (image_url.startsWith('//')) image_url = 'https:' + image_url;
              else image_url = new URL(image_url, source.url).href;
           }
-          const link_original = $(element).find('a').first().attr('href');
-          
-          if (!title || !link_original) return;
 
           const full_link = link_original && !link_original.startsWith('http') 
             ? new URL(link_original, source.url).href 
@@ -123,7 +220,7 @@ async function runScraper() {
           }
         });
       } catch (e) {
-        console.error(`No se pudo leer la fuente ${source.url}`);
+        console.error(`No se pudo leer la fuente ${source.url} - Error: ${e.message}`);
       }
     }
 
