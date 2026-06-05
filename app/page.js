@@ -19,8 +19,9 @@ async function fetchNoticias() {
     const sheet = doc.sheetsByTitle['Noticias'] || doc.sheetsByIndex[0];
     if (!sheet) return [];
     
-    // Obtenemos las filas. El límite por defecto es suficiente para las notas recientes
-    const rows = await sheet.getRows({ offset: Math.max(0, sheet.rowCount - 200), limit: 200 }); 
+    // Obtenemos todas las filas con datos y nos quedamos con las últimas 200
+    const allRows = await sheet.getRows(); 
+    const rows = allRows.slice(-200);
     
     return rows.map(row => {
       return {

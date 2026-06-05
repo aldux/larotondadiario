@@ -15,8 +15,9 @@ async function getNewsById(id) {
     const sheet = doc.sheetsByTitle['Noticias'] || doc.sheetsByIndex[0];
     if (!sheet) return null;
     
-    // Obtenemos solo las ultimas 300 para no hacer lenta la busqueda, el id suele estar entre las recientes
-    const rows = await sheet.getRows({ offset: Math.max(0, sheet.rowCount - 300), limit: 300 }); 
+    // Obtenemos todas las filas con datos y buscamos en las últimas 300
+    const allRows = await sheet.getRows(); 
+    const rows = allRows.slice(-300);
     const targetRow = rows.find(row => row.get('id') === id);
     
     if (!targetRow) return null;
