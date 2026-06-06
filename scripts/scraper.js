@@ -105,6 +105,18 @@ const SOURCES = [
     // Reparación hiper-agresiva de la clave privada para GitHub Actions
     let formattedKey = process.env.GOOGLE_PRIVATE_KEY || '';
     
+    // 0. Si el usuario pegó el archivo JSON COMPLETO en lugar de solo la clave
+    if (formattedKey.trim().startsWith('{')) {
+      try {
+        const jsonKey = JSON.parse(formattedKey);
+        if (jsonKey.private_key) {
+          formattedKey = jsonKey.private_key;
+        }
+      } catch (e) {
+        console.log("No se pudo parsear el JSON de la clave privada, intentando limpieza de texto plana...");
+      }
+    }
+    
     // 1. Quitar cualquier comilla que envuelva al string
     formattedKey = formattedKey.replace(/^"|"$/g, '').replace(/^'|'$/g, '');
     
