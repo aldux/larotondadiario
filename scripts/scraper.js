@@ -102,11 +102,16 @@ const SOURCES = [
 ];
 
 // Configuración de Google Sheets
-const serviceAccountAuth = new JWT({
-  email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  key: process.env.GOOGLE_PRIVATE_KEY ? process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n') : '', 
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
+    // Reparación robusta de la clave privada para evitar el error 'DECODER routines::unsupported'
+    // Elimina comillas dobles al principio y final, y convierte los \n literales en saltos de línea reales
+    const rawKey = process.env.GOOGLE_PRIVATE_KEY || '';
+    const formattedKey = rawKey.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+
+    const serviceAccountAuth = new JWT({
+      email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      key: formattedKey,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
 
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID, serviceAccountAuth);
 
