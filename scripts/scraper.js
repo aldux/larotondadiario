@@ -102,10 +102,26 @@ const SOURCES = [
 ];
 
 // Configuración de Google Sheets
-    // Reparación robusta de la clave privada para evitar el error 'DECODER routines::unsupported'
-    // Elimina comillas dobles al principio y final, y convierte los \n literales en saltos de línea reales
-    const rawKey = process.env.GOOGLE_PRIVATE_KEY || '';
-    const formattedKey = rawKey.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+    // Reparación hiper-agresiva de la clave privada para GitHub Actions
+    let formattedKey = process.env.GOOGLE_PRIVATE_KEY || '';
+    
+    // 1. Quitar cualquier comilla que envuelva al string
+    formattedKey = formattedKey.replace(/^"|"$/g, '').replace(/^'|'$/g, '');
+    
+    // 2. Reemplazar los saltos de línea escapados (\n literal) por saltos reales
+    formattedKey = formattedKey.split(String.raw`\n`).join('\n').replace(/\\n/g, '\n');
+    
+    // 3. Si por algún motivo el usuario pegó la clave todo en una sola línea con espacios:
+    if (formattedKey.includes('-----BEGIN PRIVATE KEY-----') && !formattedKey.includes('\n')) {
+      formattedKey = formattedKey.replace('-----BEGIN PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----\n');
+      formattedKey = formattedKey.replace('-----END PRIVATE KEY-----', '\n-----END PRIVATE KEY-----\n');
+      // Limpiamos los espacios en el medio (el payload base64)
+      const parts = formattedKey.split('\n');
+      if (parts.length >= 3) {
+        parts[1] = parts[1].replace(/\s+/g, '');
+        formattedKey = parts.join('\n');
+      }
+    }
 
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
